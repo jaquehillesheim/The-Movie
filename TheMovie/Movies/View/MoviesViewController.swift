@@ -65,7 +65,6 @@ class MoviesViewController: UIViewController {
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
-            
         }
     }
     
@@ -134,8 +133,9 @@ extension MoviesViewController: UITableViewDataSource {
 }
 extension MoviesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-            
+        let id = viewModel.didSelectMovie(at: indexPath)
+        let viewController = MovieDetailsViewController(id: id)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 

@@ -45,13 +45,30 @@ class MovieDetailsViewController: UIViewController {
         return label
     }()
     
+    private let viewModel = MovieDetailsViewModel()
+    private let id: Int
+    
+    init(id: Int) {
+        self.id = id
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 230/255, green: 248/255, blue: 234/255, alpha: 1)
+        viewModel.loadData(id: id)
+        setupView()
+        viewModel.reload = {
+            self.setDetails()
+        }
     }
 }
 extension MovieDetailsViewController {
-    func setupView(movie: Movie) {
+    func setupView() {
         view.addSubview(label)
         view.addSubview(backdropPathImage)
         view.addSubview(titleLabel)
@@ -60,23 +77,6 @@ extension MovieDetailsViewController {
         
         setupContraint()
         
-        releaseDateLabel.text = "Lançamento do Filme: \(movie.release_date ?? "")"
-        
-        adultLabel.text = "Adult: \(movie.adult)"
-        
-        guard movie.backdrop_path != nil else {
-            return
-        }
-        label.text = movie.overview
-        
-//        let backdropImage = "https://image.tmdb.org/t/p/w185\(image)"
-//        backdropPathImage.loadFrom(URLAddress: backdropImage)
-        
-        guard let movieTitle = movie.title else {
-            titleLabel.text = "\(movie.name ?? "")"
-            return
-        }
-        titleLabel.text = "\(movieTitle)"
     }
     
     func setupContraint() {
@@ -105,4 +105,14 @@ extension MovieDetailsViewController {
             make.leading.trailing.equalToSuperview().inset(20)
         }
     }
+    
+    func setDetails() {
+        DispatchQueue.main.async {
+            
+            self.titleLabel.text = self.viewModel.title
+            self.releaseDateLabel.text = self.viewModel.releaseDate
+        }
+        
+    }
 }
+

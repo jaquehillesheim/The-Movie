@@ -16,7 +16,7 @@ class MoviesViewModel {
     private let service = MovieService()
     private var page: Int = 1
     
-    private var cellViewModels: [MainCellViewModel] = [MainCellViewModel]() {
+    private var cellViewModels: [MoviesCellViewModel] = [MoviesCellViewModel]() {
         didSet {
             self.reloadTableView?()
         }
@@ -38,22 +38,22 @@ class MoviesViewModel {
         return cellViewModels.count
     }
     
-    func getCellViewModel( at indexPath: IndexPath ) -> MainCellViewModel {
+    func getCellViewModel(at indexPath: IndexPath) -> MoviesCellViewModel {
         return cellViewModels[indexPath.row]
     }
     
     func createCell(movies: MoviesModel) {
         self.movies = movies
-        var viewModels = [MainCellViewModel]()
+        var viewModels = [MoviesCellViewModel]()
         for movie in movies.results {
             guard let urlImage = URL(string: "https://image.tmdb.org/t/p/w185\(movie.poster_path ?? "")") else { return }
             let id = "id: \(movie.id)"
             let language = "Idioma: \(movie.original_language ?? "") "
             if let title = movie.title {
-                viewModels.append(MainCellViewModel(title: title, id: id, poster_path: urlImage, original_language: language))
+                viewModels.append(MoviesCellViewModel(title: title, id: id, poster_path: urlImage, original_language: language))
             }
             if let name = movie.name {
-                viewModels.append(MainCellViewModel(title: name, id: id, poster_path: urlImage, original_language: language))
+                viewModels.append(MoviesCellViewModel(title: name, id: id, poster_path: urlImage, original_language: language))
             }
             cellViewModels = viewModels
         }
@@ -70,9 +70,13 @@ class MoviesViewModel {
         loadData()
         reloadTableView?()
     }
+    
+    func didSelectMovie(at indexPath: IndexPath) -> Int {
+        return self.movies?.results[indexPath.row].id ?? 0
+    }
 }
 
-struct MainCellViewModel {
+struct MoviesCellViewModel {
     let title: String
     let id: String
     let poster_path: URL

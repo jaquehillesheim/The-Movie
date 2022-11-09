@@ -28,19 +28,20 @@ class MovieService {
             }
         }.resume()
     }
-    
-    func fetchPosterPath(poster: String, completion: @escaping (Result<UIImage, Error>) -> Void) {
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w185\(poster)") else { return }
+
+    func fetchMovieDetails(id: Int, completion: @escaping (Result<Movie, Error>) -> Void) {
+        guard let url = URL(string: "https://api.themoviedb.org/3/movie/\(id)?api_key=\(token)") else { return }
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 completion(.failure(error))
             }
             
-            if let data = data {
-                let image = UIImage(data: data)
-                completion(.success(image ?? UIImage()))
+            do {
+                let movies = try JSONDecoder().decode(Movie.self, from: data!)
+                completion(.success(movies))
+            } catch let error {
+                completion(.failure(error))
             }
         }.resume()
-        
     }
 }
