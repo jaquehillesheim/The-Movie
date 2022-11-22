@@ -14,50 +14,57 @@ class MoviesTableViewCell: UITableViewCell {
     private(set) lazy var posterPathImage: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
+        image.layer.cornerRadius = 32.0
+        image.layer.masksToBounds = true
         return image
     }()
     
     private(set) lazy var title: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .boldSystemFont(ofSize: 20)
-        label.numberOfLines = 4
-        label.textColor = .red
+        label.font = .boldSystemFont(ofSize: 20.0)
+        label.numberOfLines = 0
+        label.textColor = .white
         return label
     }()
     
-    private(set) lazy var idLabel: UILabel = {
+    private lazy var textStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        [title, releaseDataLabel].forEach { view in
+            stack.addArrangedSubview(view)
+        }
+        stack.distribution = .fillProportionally
+        stack.spacing = 8
+        return stack
+    }()
+    
+    private(set) lazy var releaseDataLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .white
         return label
     }()
     
-    private(set) lazy var originalLinguageLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    private lazy var mainStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        [posterPathImage, textStackView].forEach { view in
+            stack.addArrangedSubview(view)
+        }
+        stack.distribution = .fillProportionally
+        stack.spacing = 16.0
+        stack.alignment = .center
+        return stack
     }()
-
-    private lazy var voteCountLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var voteAverageLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var popularityLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+   
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setLayout()
         setupLabel()
+
     }
     
     required init?(coder: NSCoder) {
@@ -65,15 +72,18 @@ class MoviesTableViewCell: UITableViewCell {
     }
     
     func setupLabel() {
-        backgroundColor = UIColor(red: 250/255, green: 214/255, blue: 165/255, alpha: 1)
+        addSubview(mainStackView)
         
-        addSubview(title)
-        addSubview(idLabel)
-        addSubview(originalLinguageLabel)
-        addSubview(voteAverageLabel)
-        addSubview(posterPathImage)
-        addSubview(voteCountLabel)
-        addSubview(popularityLabel)
+        mainStackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(16.0)
+            make.bottom.equalToSuperview().offset(-16.0)
+            make.leading.trailing.equalToSuperview().inset(24)
+        }
+        
+        posterPathImage.snp.makeConstraints { make in
+            make.width.equalTo(90)
+            make.height.equalTo(120)
+        }
         
         posterPathImage.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(5)
@@ -82,41 +92,9 @@ class MoviesTableViewCell: UITableViewCell {
             make.height.equalTo(150)
             make.bottom.equalToSuperview()
         }
-        
-        title.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(5)
-            make.leading.equalTo(posterPathImage.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().offset(-10)
-        }
-        
-        idLabel.snp.makeConstraints { make in
-            make.top.equalTo(title.snp.bottom).offset(5)
-            make.leading.equalTo(posterPathImage.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().offset(-10)
-        }
-        
-        originalLinguageLabel.snp.makeConstraints { make in
-            make.top.equalTo(idLabel.snp.bottom).offset(5)
-            make.leading.equalTo(posterPathImage.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().offset(-10)
-        }
-        
-        voteCountLabel.snp.makeConstraints { make in
-            make.top.equalTo(originalLinguageLabel.snp.bottom).offset(5)
-            make.leading.equalTo(posterPathImage.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().offset(-10)
-        }
-        
-        voteAverageLabel.snp.makeConstraints { make in
-            make.top.equalTo(voteCountLabel.snp.bottom).offset(5)
-            make.leading.equalTo(posterPathImage.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().offset(-10)
-        }
-        
-        popularityLabel.snp.makeConstraints { make in
-            make.top.equalTo(voteAverageLabel.snp.bottom).offset(5)
-            make.leading.equalTo(posterPathImage.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().offset(-10)
-        }
+    }
+    
+    private func setLayout() {
+        backgroundColor = .clear
     }
 }

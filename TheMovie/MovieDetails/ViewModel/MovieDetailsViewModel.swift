@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SDWebImage
 
 class MovieDetailsViewModel {
     private let service = MovieService()
@@ -23,11 +24,26 @@ class MovieDetailsViewModel {
             }
         }
     }
+    
     var title: String {
         model?.title ?? ""
     }
+    
     var releaseDate: String {
         model?.release_date ?? ""
+    }
+    
+    var backdropPathImage: URL? {
+        URL(string: "https://image.tmdb.org/t/p/w185\(model?.backdrop_path ?? "")")
+    }
+    
+    var userScoreLabel: String {
+        guard let average = model?.vote_average else { return ""}
+        return "Nota dos Usuários: \(average)"
+    }
+    
+    var descriptionLabel: String {
+        model?.overview ?? ""
     }
 }
 

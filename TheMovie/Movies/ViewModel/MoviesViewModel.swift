@@ -47,28 +47,20 @@ class MoviesViewModel {
         var viewModels = [MoviesCellViewModel]()
         for movie in movies.results {
             guard let urlImage = URL(string: "https://image.tmdb.org/t/p/w185\(movie.poster_path ?? "")") else { return }
-            let id = "id: \(movie.id)"
-            let language = "Idioma: \(movie.original_language ?? "") "
-            if let title = movie.title {
-                viewModels.append(MoviesCellViewModel(title: title, id: id, poster_path: urlImage, original_language: language))
-            }
-            if let name = movie.name {
-                viewModels.append(MoviesCellViewModel(title: name, id: id, poster_path: urlImage, original_language: language))
-            }
+            
+            let title = configureTitle(movie: movie)
+            let releaseDate = configureDate(movie: movie)
+
+            viewModels.append(
+                MoviesCellViewModel(
+                    title: title,
+                    poster_path: urlImage,
+                    release_date: releaseDate
+                )
+            )
+            
             cellViewModels = viewModels
         }
-    }
-    
-    func nextPage() {
-        page += 1
-        loadData()
-        reloadTableView?()
-    }
-    
-    func previousPage() {
-        page -= 1
-        loadData()
-        reloadTableView?()
     }
     
     func didSelectMovie(at indexPath: IndexPath) -> Int {
@@ -76,9 +68,36 @@ class MoviesViewModel {
     }
 }
 
+private extension MoviesViewModel {
+    func configureTitle(movie: Movie) -> String {
+        var title: String = ""
+        
+        if let movieTitle = movie.title {
+            title = movieTitle
+        }
+        
+        if let movieName = movie.name {
+            title = movieName
+        }
+        return title
+    }
+    
+    func configureDate(movie: Movie) -> String {
+        var releaseData: String = ""
+        
+        if let date = movie.release_date {
+            releaseData = date
+        }
+        
+        if let date = movie.first_air_date {
+            releaseData = date
+        }
+        return "Lançamento: \(releaseData.formatDate())"
+    }
+}
+
 struct MoviesCellViewModel {
     let title: String
-    let id: String
     let poster_path: URL
-    let original_language: String?
+    let release_date: String
 }
