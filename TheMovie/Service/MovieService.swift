@@ -8,6 +8,10 @@
 import Foundation
 import UIKit
 
+enum ApiError: Error {
+    case connectionFailure
+}
+
 class MovieService {
     private let urlAPI = "https://api.themoviedb.org/3/trending/all/week?api_key="
     private let token = "4c952a66aec922c199eb9a89786edb85"
@@ -20,8 +24,13 @@ class MovieService {
                 completion(.failure(error))
             }
             
+            guard let data = data else {
+                completion(.failure(ApiError.connectionFailure))
+                return
+            }
+            
             do {
-                let movies = try JSONDecoder().decode(MoviesModel.self, from: data!)
+                let movies = try JSONDecoder().decode(MoviesModel.self, from: data)
                 completion(.success(movies))
             } catch let error {
                 completion(.failure(error))
@@ -36,8 +45,13 @@ class MovieService {
                 completion(.failure(error))
             }
             
+            guard let data = data else {
+                completion(.failure(ApiError.connectionFailure))
+                return
+            }
+            
             do {
-                let movies = try JSONDecoder().decode(Movie.self, from: data!)
+                let movies = try JSONDecoder().decode(Movie.self, from: data)
                 completion(.success(movies))
             } catch let error {
                 completion(.failure(error))

@@ -43,6 +43,13 @@ class MoviesViewController: UIViewController {
                 self.tableView.reloadData()
             }
         }
+        
+        viewModel.alert = {
+            DispatchQueue.main.async {
+                self.alert(title: "Atenção", message: "Não foi possivel carregar o filme")
+                }
+            }
+        navigationController?.navigationBar.tintColor = .white
     }
 }
 
@@ -60,7 +67,7 @@ private extension MoviesViewController {
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.centerX.equalToSuperview()
         }
-
+        
         tableView.snp.makeConstraints { make in
             make.top.equalTo(tituloLabel.snp.bottom).offset(32)
             make.leading.equalToSuperview()
@@ -68,7 +75,21 @@ private extension MoviesViewController {
             make.bottom.equalToSuperview()
         }
     }
+    
+    func alert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let defaultAction = UIAlertAction(
+            title: "Tente Novamente",
+            style: .default,
+            handler: { _ in
+                self.viewModel.loadData()
+                
+            })
+        alert.addAction(defaultAction)
+        self.present(alert, animated: true)
+    }
 }
+
 
 extension MoviesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -87,9 +108,9 @@ extension MoviesViewController: UITableViewDataSource {
 }
 
 extension MoviesViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let id = viewModel.didSelectMovie(at: indexPath)
-        let viewController = MovieDetailsViewController(id: id)
-        navigationController?.pushViewController(viewController, animated: true)
-    }
-}
+            func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+                let id = viewModel.didSelectMovie(at: indexPath)
+                let viewController = MovieDetailsViewController(id: id)
+                navigationController?.pushViewController(viewController, animated: true)
+            }
+        }

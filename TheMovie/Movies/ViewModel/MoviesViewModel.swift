@@ -12,6 +12,7 @@ class MoviesViewModel {
     
     var movies: MoviesModel?
     var reloadTableView: (() -> Void)?
+    var alert: (() -> Void)?
     
     private let service = MovieService()
     private var page: Int = 1
@@ -28,8 +29,8 @@ class MoviesViewModel {
             case .success(let movies):
                 self.createCell(movies: movies)
                 self.reloadTableView?()
-            case .failure(let error):
-                print(error)
+            case .failure:
+                self.alert?()
             }
         }
     }

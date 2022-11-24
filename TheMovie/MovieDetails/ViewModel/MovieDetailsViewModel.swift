@@ -12,6 +12,7 @@ class MovieDetailsViewModel {
     private let service = MovieService()
     var model: Movie?
     var reload: (() -> Void)?
+    var alert: (() -> Void)?
     
     func loadData(id: Int) {
         service.fetchMovieDetails(id: id) { result in
@@ -19,8 +20,8 @@ class MovieDetailsViewModel {
             case .success(let success):
                 self.model = success
                 self.reload?()
-            case .failure(let failure):
-                print(failure)
+            case .failure:
+                self.alert?()
             }
         }
     }

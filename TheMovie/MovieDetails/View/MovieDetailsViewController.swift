@@ -11,6 +11,18 @@ import SnapKit
 import SDWebImage
 
 class MovieDetailsViewController: UIViewController {
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
 
     private lazy var backdropPathImage: UIImageView = {
         let image = UIImageView()
@@ -25,7 +37,7 @@ class MovieDetailsViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 24.0, weight: .bold)
-        label.numberOfLines = 4
+        label.numberOfLines = 2
         label.textColor = .white
         label.textAlignment = .center
         return label
@@ -36,7 +48,7 @@ class MovieDetailsViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.textColor = .white
-        label.font = .systemFont(ofSize: 16.0, weight: .bold)
+        label.font = .systemFont(ofSize: 20.0, weight: .bold)
         return label
     }()
     
@@ -44,7 +56,9 @@ class MovieDetailsViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 26.0, weight: .bold)
         label.textColor = .white
+        label.textAlignment = .justified
         return label
     }()
    
@@ -64,41 +78,67 @@ class MovieDetailsViewController: UIViewController {
         super.viewDidLoad()
         view.setBackground()
         viewModel.loadData(id: id)
-        setupView()
+        
         viewModel.reload = {
-            self.setDetails()
+            DispatchQueue.main.async {
+                self.setupView()
+                self.setDetails()
+            }
+        }
+        viewModel.alert = {
+            self.alert(title: "Atenção", message: "Não foi possivel carregar o detalhe do filme")
+            }
         }
     }
-}
+
 extension MovieDetailsViewController {
     func setupView() {
-        view.addSubview(titleLabel)
-        view.addSubview(backdropPathImage)
-        view.addSubview(userScoreLabel)
-        view.addSubview(descriptionLabel)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(backdropPathImage)
+        contentView.addSubview(userScoreLabel)
+        contentView.addSubview(descriptionLabel)
+        
+        
         setupContraint()
     }
     
     func setupContraint() {
         
+        contentView.snp.makeConstraints { make in
+            make.centerX.equalTo(scrollView.snp.centerX)
+            make.width.equalTo(scrollView.snp.width)
+            make.top.equalTo(scrollView.snp.top)
+            make.bottom.equalTo(scrollView.snp.bottom)
+        }
+        
+        scrollView.snp.makeConstraints { make in
+            make.centerX.equalTo(view.snp.centerX)
+            make.width.equalTo(view.snp.width)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
+        
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(32.0)
+            make.top.equalTo(contentView.snp.top).offset(10)
             make.leading.trailing.equalToSuperview()
         }
         backdropPathImage.snp.makeConstraints { make in
-            make.centerX.equalTo(view.snp.centerX)
+            make.centerX.equalTo(contentView.snp.centerX)
             make.leading.trailing.equalToSuperview()
             make.size.equalTo(250)
-            make.top.equalTo(titleLabel.snp.bottom).offset(32.0)
+            make.top.equalTo(titleLabel.snp.bottom).offset(10)
         }
         userScoreLabel.snp.makeConstraints { make in
-            make.top.equalTo(backdropPathImage.snp.bottom).offset(32.0)
-            make.centerX.equalTo(view.snp.centerX)
+            make.top.equalTo(backdropPathImage.snp.bottom)
+            make.centerX.equalTo(contentView.snp.centerX)
         }
         
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(userScoreLabel.snp.bottom).offset(32.0)
             make.leading.trailing.equalToSuperview().inset(16.0)
+            make.bottom.equalTo(contentView.snp.bottom)
         }
     }
     
@@ -110,6 +150,18 @@ extension MovieDetailsViewController {
             self.userScoreLabel.text = self.viewModel.userScoreLabel
             self.descriptionLabel.text = self.viewModel.descriptionLabel
         }
+    }
+    
+    func alert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let defaultAction = UIAlertAction(
+            title: "Voltar",
+            style: .default,
+            handler: { _ in
+                self.navigationController?.popViewController(animated: true)
+            })
+        alert.addAction(defaultAction)
+        present(alert, animated: true)
     }
 }
 
