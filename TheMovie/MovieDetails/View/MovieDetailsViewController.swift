@@ -99,8 +99,6 @@ extension MovieDetailsViewController {
         contentView.addSubview(backdropPathImage)
         contentView.addSubview(userScoreLabel)
         contentView.addSubview(descriptionLabel)
-        
-        
         setupContraint()
     }
     
@@ -154,6 +152,7 @@ extension MovieDetailsViewController {
     
     func alert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    
         let defaultAction = UIAlertAction(
             title: "Voltar",
             style: .default,
@@ -164,4 +163,6 @@ extension MovieDetailsViewController {
         present(alert, animated: true)
     }
 }
+
+
 

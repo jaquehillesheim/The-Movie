@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import SDWebImage
+import Lottie
 
 class MoviesViewController: UIViewController {
     
@@ -17,16 +18,27 @@ class MoviesViewController: UIViewController {
         label.text = "Escolha seu filmes."
         label.textColor = .white
         label.font = .systemFont(ofSize: 24.0, weight: .bold)
-        return label
         
+        return label
     }()
+    
     private lazy var tableView: UITableView = {
         let tableview = UITableView()
         tableview.translatesAutoresizingMaskIntoConstraints = false
         tableview.register(MoviesTableViewCell.self, forCellReuseIdentifier: "cell")
         tableview.backgroundColor = .clear
         tableview.separatorStyle = .none
+        
         return tableview
+    }()
+    
+    private let animationView: LottieAnimationView = {
+        let lottieAnimationView = LottieAnimationView(name: "Movie")
+        lottieAnimationView.translatesAutoresizingMaskIntoConstraints = false
+        lottieAnimationView.loopMode = .repeat(2.0)
+        lottieAnimationView.backgroundColor = .clear
+        
+        return lottieAnimationView
     }()
     
     private var viewModel = MoviesViewModel()
@@ -34,9 +46,9 @@ class MoviesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.setBackground()
+        setupView()
         tableView.delegate = self
         tableView.dataSource = self
-        setupView()
         viewModel.loadData()
         viewModel.reloadTableView = {
             DispatchQueue.main.async {
@@ -54,11 +66,37 @@ class MoviesViewController: UIViewController {
 }
 
 private extension MoviesViewController {
+    
+    func setupLottie() {
+        view.addSubview(animationView)
+        
+        animationView.frame = view.bounds
+        animationView.center = view.center
+        animationView.alpha = 1
+        animationView.backgroundColor = .darkBackground
+        
+        animationView.snp.makeConstraints { make in
+            make.height.equalToSuperview()
+            make.width.equalToSuperview()
+        }
+        
+        animationView.play { _ in
+            UIView.animate(withDuration: 2, animations: {
+            self.animationView.alpha = 0
+          }, completion: { _ in
+            self.viewModel.loadData()
+            self.animationView.isHidden = true
+            self.animationView.removeFromSuperview()
+           
+          })
+        }
+    }
     func setupView() {
         navigationItem.backButtonTitle = "Voltar"
         view.addSubview(tituloLabel)
         view.addSubview(tableView)
         setupConstraint()
+        setupLottie()
     }
     
     func setupConstraint() {
@@ -89,7 +127,6 @@ private extension MoviesViewController {
         self.present(alert, animated: true)
     }
 }
-
 
 extension MoviesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

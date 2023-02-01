@@ -8,5 +8,6 @@ target 'TheMovie' do
   # Pods for TheMovie
 	pod 'SnapKit'
   pod 'SDWebImage', '~> 5.0'
+pod 'lottie-ios'
 
 end

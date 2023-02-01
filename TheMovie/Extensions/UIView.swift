@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+
 extension UIView {
     func setBackground() {
         let gradient = CAGradientLayer()
